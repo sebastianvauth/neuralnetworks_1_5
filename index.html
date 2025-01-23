@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Perceptron - Mathematical Formulation and Key Concepts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            font-size: 150%;
+        }
+        section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+        h1, h2, h3, h4 {
+            color: #333;
+            margin-top: 20px;
+        }
+        p, li {
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 20px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        .image-placeholder, .interactive-placeholder, .continue-button, .vocab-section, .why-it-matters, .test-your-knowledge, .faq-section, .stop-and-think {
+            text-align: left;
+        }
+        .image-placeholder img, .interactive-placeholder img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .vocab-section, .why-it-matters, .test-your-knowledge, .faq-section, .stop-and-think {
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .vocab-section {
+            background-color: #f0f8ff;
+        }
+        .vocab-section h3 {
+            color: #1e90ff;
+            font-size: 0.75em;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        .vocab-section h4 {
+            color: #000;
+            font-size: 0.9em;
+            margin-top: 10px;
+            margin-bottom: 8px;
+        }
+        .vocab-term {
+            font-weight: bold;
+            color: #1e90ff;
+        }
+        .why-it-matters {
+            background-color: #ffe6f0;
+        }
+        .why-it-matters h3 {
+            color: #d81b60;
+            font-size: 0.75em;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        .stop-and-think {
+            background-color: #e6e6ff;
+        }
+        .stop-and-think h3 {
+            color: #4b0082;
+            font-size: 0.75em;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        .continue-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 15px;
+            color: #ffffff;
+            background-color: #007bff;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .reveal-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 15px;
+            color: #ffffff;
+            background-color: #4b0082;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .test-your-knowledge {
+            background-color: #e6ffe6;
+        }
+        .test-your-knowledge h3 {
+            color: #28a745;
+            font-size: 0.75em;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        .test-your-knowledge h4 {
+            color: #000;
+            font-size: 0.9em;
+            margin-top: 10px;
+            margin-bottom: 8px;
+        }
+        .test-your-knowledge p {
+            margin-bottom: 15px;
+        }
+        .check-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 15px;
+            color: #ffffff;
+            background-color: #28a745;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-size: 1em;
+        }
+        .faq-section {
+            background-color: #fffbea;
+        }
+        .faq-section h3 {
+            color: #ffcc00;
+            font-size: 0.75em;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+        .faq-section h4 {
+            color: #000;
+            font-size: 0.9em;
+            margin-top: 10px;
+            margin-bottom: 8px;
+        }
+        .interactive-element {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .interactive-element h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .input-panel, .output-panel {
+            margin-bottom: 20px;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .slider-container label {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .slider-container input[type="range"] {
+            flex: 2;
+        }
+        .slider-container input[type="number"] {
+            width: 60px;
+            margin-left: 10px;
+        }
+        select {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        #visualization {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ddd;
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <section id="section1">
+        <h1>The Perceptron - Mathematical Formulation and Key Concepts</h1>
+        <div class="image-placeholder">
+            <img src="/placeholder.svg?height=300&width=600" alt="An image depicting a historical photo of Frank Rosenblatt, the inventor of the perceptron, alongside a diagram of a perceptron.">
+        </div>
+        <h2>Diving Deeper: The Perceptron</h2>
+        <p>Welcome back! Now that we've covered the basics of artificial neurons, let's focus on a specific type: the <strong>perceptron</strong>. Historically, the perceptron was one of the first artificial neuron models developed, and it's a fundamental building block in understanding more complex neural networks.</p>
+        <div class="continue-button" onclick="showNextSection(2)">Continue</div>
+    </section>
+
+    <section id="section2">
+        <h2>The Perceptron: A Linear Classifier</h2>
+        <p>The perceptron, in its simplest form, is a <strong>linear classifier</strong>. This means it can learn to classify data into two categories by finding a linear decision boundary – a straight line (or a hyperplane in higher dimensions) that separates the two classes.</p>
+        <p>Think back to the marble example from Lesson 1. If we could separate the balanced and defective marbles with a straight line on a scatter plot, that's essentially what a perceptron can do.</p>
+        <div class="image-placeholder">
+            <img src="/placeholder.svg?height=300&width=600" alt="A scatter plot showing two classes of data points (e.g., blue circles and red squares) that are linearly separable. A straight line is drawn to separate the two classes.">
+            <p><em>A perceptron can learn to classify data that is linearly separable, meaning the classes can be separated by a straight line (or hyperplane).</em></p>
+        </div>
+        <div class="continue-button" onclick="showNextSection(3)">Continue</div>
+    </section>
+
+    <section id="section3">
+        <h2>Mathematical Formulation of the Perceptron</h2>
+        <p>Let's break down the perceptron's mathematical formulation:</p>
+        <ol>
+            <li>
+                <strong>Weighted Sum:</strong> First, the perceptron calculates the weighted sum of its inputs and adds a bias, similar to the general artificial neuron we saw in the last lesson. Mathematically, this is represented as:
+                <p>\[ z = \sum_{i=1}^{m} w_i x_i + b \]</p>
+                <p>Where:</p>
+                <ul>
+                    <li>$$ z $$ is the weighted sum plus bias.</li>
+                    <li>$$ w_i $$ is the weight associated with the i-th input $$ x_i $$.</li>
+                    <li>$$ b $$ is the bias term.</li>
+                </ul>
+            </li>
+            <li>
+                <strong>Activation Function:</strong> The perceptron then applies an activation function to this weighted sum. However, unlike the more general artificial neuron, the perceptron traditionally uses a very simple activation function: the <strong>step function</strong>.
+                <p>The step function is defined as:</p>
+                <p>\[ \phi(z) = \begin{cases} 1 & \text{if } z \geq 0 \\ 0 & \text{if } z < 0 \end{cases} \]</p>
+                <p>This means the perceptron outputs 1 if the weighted sum plus bias is greater than or equal to zero, and 0 otherwise.</p>
+            </li>
+        </ol>
+        <p>Therefore the complete equation is:</p>
+        <p>\[ a = \phi\left(\sum_{i=1}^{m} w_i x_i + b\right) \]</p>
+        <div class="continue-button" onclick="showNextSection(4)">Continue</div>
+    </section>
+
+    <section id="section4">
+        <h2>Example Calculation</h2>
+        <p>Let's walk through a simple example.</p>
+        <ol>
+            <li>Suppose we have a perceptron with two inputs: $$ x_1 = 2 $$ and $$ x_2 = 3 $$.</li>
+            <li>Let the weights be: $$ w_1 = 0.5 $$ and $$ w_2 = -1 $$.</li>
+            <li>And let the bias be: $$ b = 1 $$.</li>
+            <li><strong>Step 1: Calculate the weighted sum:</strong>
+                <p>\[ z = (0.5 * 2) + (-1 * 3) + 1 = 1 - 3 + 1 = -1 \]</p>
+            </li>
+            <li><strong>Step 2: Apply the activation function:</strong>
+                <p>Since $$ z = -1 $$, which is less than 0, the step function outputs 0.</p>
+                <p>\[ a = \phi(-1) = 0 \]</p>
+            </li>
+            <li><strong>Result:</strong> The output of the perceptron is 0.</li>
+        </ol>
+        <div class="continue-button" onclick="showNextSection(5)">Continue</div>
+    </section>
+
+    <section id="section5">
+        <h2>Interactive Perceptron Calculator</h2>
+        <div class="interactive-element">
+            <h3>Perceptron Calculator</h3>
+            <p>Adjust the sliders or input fields to set the values for inputs, weights, and bias. Choose an activation function from the dropdown menu.</p>
+            <div class="input-panel">
+                <div class="slider-container">
+                    <label for="x1">Input x<sub>1</sub>:</label>
+                    <input type="range" id="x1" min="-5" max="5" value="0" step="0.1">
+                    <input type="number" id="x1-value" value="0" min="-5" max="5" step="0.1">
+                </div>
+                <div class="slider-container">
+                    <label for="x2">Input x<sub>2</sub>:</label>
+                    <input type="range" id="x2" min="-5" max="5" value="0" step="0.1">
+                    <input type="number" id="x2-value" value="0" min="-5" max="5" step="0.1">
+                </div>
+                <div class="slider-container">
+                    <label for="w1">Weight w<sub>1</sub>:</label>
+                    <input type="range" id="w1" min="-2" max="2" value="1" step="0.1">
+                    <input type="number" id="w1-value" value="1" min="-2" max="2" step="0.1">
+                </div>
+                <div class="slider-container">
+                    <label for="w2">Weight w<sub>2</sub>:</label>
+                    <input type="range" id="w2" min="-2" max="2" value="1" step="0.1">
+                    <input type="number" id="w2-value" value="1" min="-2" max="2" step="0.1">
+                </div>
+                <div class="slider-container">
+                    <label for="b">Bias b:</label>
+                    <input type="range" id="b" min="-5" max="5" value="0" step="0.1">
+                    <input type="number" id="b-value" value="0" min="-5" max="5" step="0.1">
+                </div>
+                <div>
+                    <label for="activation-function">Activation Function:</label>
+                    <select id="activation-function">
+                        <option value="step">Step Function</option>
+                        <option value="identity">Identity Function (φ(z) = z)</option>
+                        <option value="sigmoid">Sigmoid</option>
+                        <option value="relu">ReLU</option>
+                    </select>
+                </div>
+            </div>
+            <div class="output-panel">
+                <p>Weighted Sum (z): <span id="weighted-sum">0</span></p>
+                <p>Output (a): <span id="output">0</span></p>
+            </div>
+            <div id="visualization"></div>
+        </div>
+        <div class="continue-button" onclick="showNextSection(6)">Continue</div>
+    </section>
+
+
+    <section id="section6">
+        <div class="why-it-matters">
+
+            <h3>Why It Matters</h3>
+            <p>The perceptron, despite its simplicity, introduced the fundamental concepts of weighted inputs, bias, and activation functions, which are essential components of more complex neural networks. It also laid the groundwork for the idea of learning through adjusting weights, a concept that is central to how neural networks are trained.</p>
+        </div>
+        <div class="continue-button" onclick="showNextSection(7)">Continue</div>
+    </section>
+
+    <section id="section7">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-section">
+            <h3>FAQ</h3>
+            <h4>What are the limitations of a perceptron?</h4>
+            <p>The main limitation of a perceptron is that it can only learn linearly separable patterns. It cannot solve problems where the classes are not separable by a straight line (or hyperplane), such as the XOR problem. This limitation led to the development of multi-layer perceptrons and more complex network architectures.</p>
+            <h4>How is the perceptron different from logistic regression?</h4>
+            <p>While both are linear classifiers, the key difference lies in their activation functions and how they are trained. The perceptron traditionally uses a step function, while logistic regression uses a sigmoid function, which outputs probabilities. Logistic regression is typically trained using gradient descent to minimize a cost function, while the perceptron uses a different learning rule based on correcting misclassifications.</p>
+        </div>
+        <div class="continue-button" onclick="showNextSection(8)">Continue</div>
+    </section>
+
+    <section id="section8">
+        <h2>Test Your Knowledge</h2>
+        <div class="test-your-knowledge">
+            <h3>Quiz</h3>
+            <h4>A perceptron has two inputs with weights w<sub>1</sub> = 2 and w<sub>2</sub> = 1, and a bias b = -3. If the inputs are x<sub>1</sub> = 1 and x<sub>2</sub> = 2, what is the output of the perceptron?</h4>
+            <form id="quiz-form">
+                <input type="radio" id="option1" name="quiz" value="0">
+                <label for="option1">0</label><br>
+                <input type="radio" id="option2" name="quiz" value="1">
+                <label for="option2">1</label><br>
+                <input type="radio" id="option3" name="quiz" value="-1">
+                <label for="option3">-1</label><br>
+                <input type="radio" id="option4" name="quiz" value="3">
+                <label for="option4">3</label><br>
+                <button type="button" class="check-button" onclick="checkAnswer()">Check Answer</button>
+            </form>
+            <p id="quiz-feedback" style="display: none;"></p>
+        </div>
+        <div class="continue-button" onclick="showNextSection(9)">Continue</div>
+    </section>
+
+    <section id="section9">
+        <h2>Review and Reflect</h2>
+        <p>In this lesson, we've delved into the mathematical formulation of the perceptron, a fundamental type of artificial neuron. We've explored its key components – weights, bias, and the step activation function – and learned how it operates as a linear classifier. We've also walked through an example calculation and experimented with an interactive perceptron calculator. In the next lesson, we'll see how we can combine multiple perceptrons to create a more powerful neural network.</p>
+        <div class="image-placeholder">
+            <img src="/placeholder.svg?height=300&width=600" alt="A conceptual image representing the perceptron as a bridge between simple linear models and more complex neural networks.">
+        </div>
+    </section>
+
+    <script>
+        // Show the first section initially
+        document.getElementById("section1").style.display = "block";
+        document.getElementById("section1").style.opacity = "1";
+
+        function showNextSection(nextSectionId) {
+            const currentButton = event.target;
+            const nextSection = document.getElementById("section" + nextSectionId);
+            
+            currentButton.style.display = "none";
+            
+            nextSection.style.display = "block";
+            setTimeout(() => {
+                nextSection.style.opacity = "1";
+            }, 10);
+
+            setTimeout(() => {
+                nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 500);
+        }
+
+        function revealAnswer(id) {
+            const revealText = document.getElementById(id);
+            const revealButton = event.target;
+            
+            revealText.style.display = "block";
+            revealButton.style.display = "none";
+        }
+
+        // Perceptron Calculator Logic
+        function updatePerceptron() {
+            const x1 = parseFloat(document.getElementById('x1').value);
+            const x2 = parseFloat(document.getElementById('x2').value);
+            const w1 = parseFloat(document.getElementById('w1').value);
+            const w2 = parseFloat(document.getElementById('w2').value);
+            const b = parseFloat(document.getElementById('b').value);
+            const activationFunction = document.getElementById('activation-function').value;
+
+            const z = w1 * x1 + w2 * x2 + b;
+            let a;
+
+            switch (activationFunction) {
+                case 'step':
+                    a = z >= 0 ? 1 : 0;
+                    break;
+                case 'identity':
+                    a = z;
+                    break;
+                case 'sigmoid':
+                    a = 1 / (1 + Math.exp(-z));
+                    break;
+                case 'relu':
+                    a = Math.max(0, z);
+                    break;
+            }
+
+            document.getElementById('weighted-sum').textContent = z.toFixed(2);
+            document.getElementById('output').textContent = a.toFixed(2);
+
+            updateVisualization(x1, x2, w1, w2, b, activationFunction);
+        }
+
+        function updateVisualization(x1, x2, w1, w2, b, activationFunction) {
+            const xValues = [];
+            const yValues = [];
+            const zValues = [];
+
+            for (let i = -5; i <= 5; i += 0.1) {
+                for (let j = -5; j <= 5; j += 0.1) {
+                    xValues.push(i);
+                    yValues.push(j);
+                    const z = w1 * i + w2 * j + b;
+                    let a;
+                    switch (activationFunction) {
+                        case 'step':
+                            a = z >= 0 ? 1 : 0;
+                            break;
+                        case 'identity':
+                            a = z;
+                            break;
+                        case 'sigmoid':
+                            a = 1 / (1 + Math.exp(-z));
+                            break;
+                        case 'relu':
+                            a = Math.max(0, z);
+                            break;
+                    }
+                    zValues.push(a);
+                }
+            }
+
+            const data = [{
+                x: xValues,
+                y: yValues,
+                z: zValues,
+                type: 'contour',
+                colorscale: 'Viridis'
+            }];
+
+            const layout = {
+                title: 'Perceptron Decision Boundary',
+                xaxis: { title: 'x1' },
+                yaxis: { title: 'x2' }
+            };
+
+            Plotly.newPlot('visualization', data, layout);
+        }
+
+        // Initialize the perceptron calculator
+        updatePerceptron();
+
+        // Add event listeners to all inputs
+        document.querySelectorAll('input[type="range"], input[type="number"], select').forEach(input => {
+            input.addEventListener('input', (event) => {
+                if (event.target.type === 'range') {
+                    document.getElementById(event.target.id + '-value').value = event.target.value;
+                } else if (event.target.type === 'number') {
+                    document.getElementById(event.target.id.replace('-value', '')).value = event.target.value;
+                }
+                updatePerceptron();
+            });
+        });
+
+        function checkAnswer() {
+            const selectedAnswer = document.querySelector('input[name="quiz"]:checked');
+            const feedback = document.getElementById('quiz-feedback');
+            
+            if (selectedAnswer) {
+                if (selectedAnswer.value === "1") {
+                    feedback.textContent = "Correct! The weighted sum is z = (2 * 1) + (1 * 2) - 3 = 1. Since z is greater than or equal to 0, the step function outputs 1.";
+                    feedback.style.color = "green";
+                } else {
+                    feedback.textContent = "Incorrect. Try calculating the weighted sum and applying the step function.";
+                    feedback.style.color = "red";
+                }
+                feedback.style.display = "block";
+            } else {
+                alert("Please select an answer before checking.");
+            }
+        }
+    </script>
+</body>
+</html>
